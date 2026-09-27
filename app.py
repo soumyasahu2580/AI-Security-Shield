@@ -1,37 +1,70 @@
 import streamlit as st
 
-st.set_page_config(page_title="AI Security Shield", page_icon="🛡️", layout="wide")
+# Page Configuration
+st.set_page_config(
+    page_title="AI Security Shield - Login",
+    page_icon="🛡️",
+    layout="centered"
+)
 
-# Session state initialize karein login status ke liye
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
+# Custom Styling for Professional Login Screen
+st.markdown("""
+    <style>
+        .login-container {
+            background-color: #1e293b;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .login-title {
+            color: #ffffff;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .login-subtitle {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
-def login():
-    st.title("🛡️ AI Security Shield - Login")
-    st.markdown("Please enter your credentials to access the secure dashboard.")
+# Initialize Session State for Authentication
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
+
+# Main Logic
+if not st.session_state["authenticated"]:
+    col1, col2, col3 = st.columns([1, 2, 1])
     
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-    
-    if st.button("Login"):
-        # Yahan aap apna simple hardcoded check ya backend verification rakh sakti hain
-        if username == "admin" and password == "security123":
-            st.session_state.logged_in = True
-            st.success("Login Successful! Redirecting...")
-            st.rerun()
-        else:
-            st.error("Invalid Username or Password")
-
-def main_app():
-    st.title("Welcome to AI Security Shield Dashboard 🚀")
-    st.write("Aapka secure workspace successfully load ho chuka hai. Left sidebar se alag-alag pages access karein.")
-    
-    if st.button("Log Out"):
-        st.session_state.logged_in = False
-        st.rerun()
-
-# Check agar user logged in hai ya nahi
-if not st.session_state.logged_in:
-    login()
+    with col2:
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        st.markdown('<p class="login-title">🛡️ AI Security Shield</p>', unsafe_allow_html=True)
+        st.markdown('<p class="login-subtitle">Enterprise Threat Intelligence & Access Gateway</p>', unsafe_allow_html=True)
+        
+        with st.form("login_form"):
+            username = st.text_input("Username", placeholder="Enter admin username")
+            password = st.text_input("Password", type="password", placeholder="Enter security password")
+            submit_btn = st.form_submit_button("Secure Login", use_container_width=True)
+            
+            if submit_btn:
+                # Default Credentials Check
+                if username == "admin" and password == "security123":
+                    st.session_state["authenticated"] = True
+                    st.success("Authentication successful! Loading workspace...")
+                    st.rerun()
+                else:
+                    st.error("Invalid credentials. Use admin / security123")
 else:
-    main_app()
+    # Once logged in, show the welcome screen with direct links or instructions
+    st.markdown("---")
+    st.markdown("## 🚀 Welcome to AI Security Shield Workspace")
+    st.markdown("Aapka secure workspace successfully load ho chuka hai. Left sidebar se alag-alag modules (Dashboard, Phishing Detector, Deepfake Analyzer) access karein.")
+    
+    if st.button("Log Out", type="secondary"):
+        st.session_state["authenticated"] = False
+        st.rerun()
